@@ -29,7 +29,7 @@ Optional arguments:
 ## Example output
 
 ```
-$ python3 smoketest.py -p <pat_for_user1_goes_here> -t https://github.fakecompany.net
+$ python3 smoketest.py -p <pat_for_user1_goes_here> -t https://github.fakecompany.net -n 2
 2021-11-11 12:39:50,966 INFO: Server at https://github.fakecompany.net/status appears to be up!
 2021-11-11 12:39:51,437 INFO: Running as user1 - PAT auth confirmed working
 2021-11-11 12:39:51,437 INFO: Testing creation of smoketest repositories
