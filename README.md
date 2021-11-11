@@ -30,14 +30,14 @@ Optional arguments:
 
 ```
 $ python3 smoketest.py -p <pat_for_user1_goes_here> -t https://github.fakecompany.net
-2021-11-11 12:17:14,902 INFO: Server at https://github.fakecompany.net/status appears to be up!
-2021-11-11 12:17:15,074 INFO: Running as user1 - PAT auth confirmed working
-2021-11-11 12:17:15,074 INFO: Testing creation of smoketest repositories
-2021-11-11 12:17:22,845 INFO: Repostiory creation returned 0 errors
-2021-11-11 12:17:22,845 INFO: Testing creation of Issues in smoketest repositories
-2021-11-11 12:17:28,285 INFO: Issue creation returned 0 errors
-2021-11-11 12:17:28,285 INFO: Testing file creation in each smoketest repository
-2021-11-11 12:17:34,250 INFO: File creation returned 0 errors
-2021-11-11 12:17:34,250 INFO: Testing deletion of smoketest repositories
-2021-11-11 12:17:37,979 INFO: Repository deletion returned 0 errors
+2021-11-11 12:39:50,966 INFO: Server at https://github.fakecompany.net/status appears to be up!
+2021-11-11 12:39:51,437 INFO: Running as user1 - PAT auth confirmed working
+2021-11-11 12:39:51,437 INFO: Testing creation of smoketest repositories
+2021-11-11 12:39:53,423 INFO: Repostiory creation returned 0 errors out of 2 attempts. 0.0% failure rate.
+2021-11-11 12:39:53,424 INFO: Testing creation of Issues in smoketest repositories
+2021-11-11 12:39:54,670 INFO: Issue creation returned 0 errors out of 2 attempts. 0.0% failure rate.
+2021-11-11 12:39:54,670 INFO: Testing file creation in each smoketest repository
+2021-11-11 12:39:55,654 INFO: File creation returned 0 errors out of 2 attempts. 0.0% failure rate.
+2021-11-11 12:39:55,654 INFO: Testing deletion of smoketest repositories
+2021-11-11 12:39:56,463 INFO: Repository deletion returned 0 errors out of 2 attempts. 0.0% failure rate.
 ```
