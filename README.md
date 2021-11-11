@@ -12,7 +12,7 @@ Note: This tool will specifically test functionality using _newly created_ repos
 ## Usage
 
 ```
-python3 smoketest.py [-p] -pat PERSONAL_ACCESS_TOKEN [-h] -target GHES_URL [-debug]
+python3 smoketest.py [-p] -pat PERSONAL_ACCESS_TOKEN [-t] -target GHES_URL [-debug]
 
 Performs simple testing against GitHub Enterprise Server to ensure basic functionality. By default, each endpoint will be tested 10 times.
 
