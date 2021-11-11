@@ -2,12 +2,13 @@
 
 This is a Python script that will hit various API endpoints (in moderate volumes) using a provided PAT and report on success/failure rates.  The tool will clean up after itself, deleting any repositories/issues/etc... created during testing.
 
-Note: This tool will specifically test functionality using _newly created_ repositories. It is not intended to advise on the health of any other repositories, and should not be used as the only source of truth for validating functionality of GitHub Enterprise Server.
+This tool will specifically test functionality using _newly created repositories_. It is not intended to advise on the health of any existing repositories, and should not be used as the only source of truth for validating functionality of GitHub Enterprise Server.
 
 ## Requirements
 
-- python3
-- requests module (`$ python -m pip install requests`)
+- Python 3
+- `requests` module (`$ python -m pip install requests`)
+- Supplied PAT must have `delete_repo, repo` scopes
 
 ## Usage
 
