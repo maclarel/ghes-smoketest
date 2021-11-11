@@ -69,7 +69,8 @@ def test_repo_creation():
         # We expect a 201 response for confirmed repo creation
         if response.status_code != 201:
             error_count += 1
-    logging.info(f"Repostiory creation returned {error_count} errors")
+    logging.info(
+        f"Repostiory creation returned {error_count} errors out of {num_repos} attempts. {float(error_count/num_repos)*100}% failure rate.")
 
 
 def test_repo_deletion():
@@ -79,12 +80,13 @@ def test_repo_deletion():
     username = get_pat_user(pat)
     error_count = 0
     for r in repo_list():
-        url = construct_api_url('repos/' + username + '/' + r)
+        url = construct_api_url(f'repos/{username}/{r}')
         response = requests.delete(url, headers=headers, verify=False)
         # We expect a 204 response on positive deletion
         if response.status_code != 204:
             error_count += 1
-    logging.info(f"Repository deletion returned {error_count} errors")
+    logging.info(
+        f"Repository deletion returned {error_count} errors out of {num_repos} attempts. {float(error_count/num_repos)*100}% failure rate.")
 
 
 def test_issues():
@@ -98,13 +100,14 @@ def test_issues():
         'title': 'This is a test issue'
     }
     for r in repo_list():
-        url = construct_api_url('repos/' + username + '/' + r + '/issues')
+        url = construct_api_url(f'repos/{username}/{r}/issues')
         response = requests.post(url, headers=headers,
                                  data=json.dumps(payload), verify=False)
         # We expect a 201 response on positive deletion
         if response.status_code != 201:
             error_count += 1
-    logging.info(f"Issue creation returned {error_count} errors")
+    logging.info(
+        f"Issue creation returned {error_count} errors out of {num_repos} attempts. {float(error_count/num_repos)*100}% failure rate.")
 
 
 def test_file_creation():
@@ -119,14 +122,14 @@ def test_file_creation():
         "content": "Zm9vCg=="  # 'foo'
     }
     for r in repo_list():
-        url = construct_api_url('repos/' + username +
-                                '/' + r + '/contents/testfile')
+        url = construct_api_url(f'repos/{username}/{r}/contents/testfile')
         response = requests.put(url, headers=headers,
                                 data=json.dumps(payload), verify=False)
         # We expect a 201 response on positive file creation
         if response.status_code != 201:
             error_count += 1
-    logging.info(f"File creation returned {error_count} errors")
+    logging.info(
+        f"File creation returned {error_count} errors out of {num_repos} attempts. {float(error_count/num_repos)*100}% failure rate.")
 
 
 if __name__ == '__main__':
@@ -160,8 +163,8 @@ if __name__ == '__main__':
         logging.info(
             f"Running as {get_pat_user(pat)} - PAT auth confirmed working")
         test_repo_creation()
-        # test_issues()
-        # test_file_creation()
+        test_issues()
+        test_file_creation()
         test_repo_deletion()
     else:
         logging.info(
