@@ -4,7 +4,7 @@ import logging
 import json
 
 '''
-Usage: smoketest.py [-p] -pat PERSONAL_ACCESS_TOKEN [-t] -target GHES_URL [-debug]
+Usage: smoketest.py [-p] -pat PERSONAL_ACCESS_TOKEN [-t] -target GHES_URL [-n] -num NUM_REPOS [-debug]
 
 Performs simple testing against GitHub Enterprise Server to ensure basic functionality. By default, each endpoint will be tested 10 times.
 
@@ -14,10 +14,12 @@ Required arguments:
 
 Optional arguments:
     -debug      Display response output as JSON
+    -n, -num    Number of repositories to create during testing (default 10)
 '''
 
 pat = ""
 target = ""
+num_repos = 10
 
 
 def validate_args():
@@ -49,11 +51,11 @@ def get_pat_user(pat):
 
 def repo_list():
     # Create names of repositories to use
-    return [f"smoketest_repo{num}" for num in range(1, 11)]
+    return [f"smoketest_repo{num}" for num in range(1, num_repos+1)]
 
 
 def test_repo_creation():
-    # Test creation of 10 repositories
+    # Test creation of repositories
     logging.info("Testing creation of smoketest repositories")
     logging.debug(f"Creating the following repositories: {repo_list()}")
     url = construct_api_url('user/repos')
@@ -134,8 +136,10 @@ if __name__ == '__main__':
                         help='The URL of the GHES instance, e.g. https://github.foo.com', required=True)
     parser.add_argument('-pat', dest='pat', type=str,
                         help='Personal Access Token to use for access', required=True)
+    parser.add_argument('-num', dest='num_repos', type=int,
+                        help='Number of repostiories to create (default 10)', required=False)
     parser.add_argument('-debug', dest='debug', action='store_true',
-                        help='display response JSON', required=False)
+                        help='Display response JSON', required=False)
     args = parser.parse_args()
 
     if args.debug:
@@ -147,6 +151,8 @@ if __name__ == '__main__':
 
     target = args.target
     pat = args.pat
+    if args.num_repos:
+        num_repos = args.num_repos
     headers = {'Accept': 'application/vnd.github.v3+json',
                'Authorization': 'token ' + pat}
 
@@ -154,8 +160,8 @@ if __name__ == '__main__':
         logging.info(
             f"Running as {get_pat_user(pat)} - PAT auth confirmed working")
         test_repo_creation()
-        test_issues()
-        test_file_creation()
+        # test_issues()
+        # test_file_creation()
         test_repo_deletion()
     else:
         logging.info(

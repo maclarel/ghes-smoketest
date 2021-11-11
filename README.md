@@ -13,7 +13,7 @@ This tool will specifically test functionality using _newly created repositories
 ## Usage
 
 ```
-python3 smoketest.py [-p] -pat PERSONAL_ACCESS_TOKEN [-t] -target GHES_URL [-debug]
+smoketest.py [-p] -pat PERSONAL_ACCESS_TOKEN [-t] -target GHES_URL [-n] -num NUM_REPOS [-debug]
 
 Performs simple testing against GitHub Enterprise Server to ensure basic functionality. By default, each endpoint will be tested 10 times.
 
@@ -23,6 +23,7 @@ Required arguments:
 
 Optional arguments:
     -debug      Display response output as JSON
+    -n, -num    Number of repositories to create during testing (default 10)
 ```
 
 ## Example output
