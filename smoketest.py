@@ -37,13 +37,15 @@ def server_up():
     response = requests.get(url, verify=False)
     logging.debug(f"Tested {url}, received response of {response.status_code}")
     if response.status_code == 200:
-        logging.info(f"Server at {url} appears to be up!") 
+        logging.info(f"Server at {url} appears to be up!")
         return True
+
 
 def get_pat_user(pat):
     url = construct_api_url('user')
     response = requests.get(url, headers=headers, verify=False)
     return json.loads(response.text)['login']
+
 
 def repo_list():
     # Create names of repositories to use
@@ -120,13 +122,15 @@ if __name__ == '__main__':
 
     target = args.target
     pat = args.pat
-    headers = {'Accept': 'application/vnd.github.v3+json', 'Authorization': 'token ' + pat}
+    headers = {'Accept': 'application/vnd.github.v3+json',
+               'Authorization': 'token ' + pat}
 
     if server_up():
-        logging.info(f"Running as {get_pat_user(pat)} - PAT auth confirmed working")
+        logging.info(
+            f"Running as {get_pat_user(pat)} - PAT auth confirmed working")
         test_repo_creation()
         test_issues()
         test_repo_deletion()
     else:
-        logging.info("Server appears to be down or is not a GitHub Enterprise Server system. Please double check the URL.")
-
+        logging.info(
+            "Server appears to be down or is not a GitHub Enterprise Server system. Please double check the URL.")
