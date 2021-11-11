@@ -54,7 +54,7 @@ def repo_list():
 
 def test_repo_creation():
     # Test creation of 10 repositories
-    logging.info("Testing repository creation")
+    logging.info("Testing creation of smoketest repositories")
     logging.debug(f"Creating the following repositories: {repo_list()}")
     url = construct_api_url('user/repos')
     error_count = 0
@@ -67,12 +67,12 @@ def test_repo_creation():
         # We expect a 201 response for confirmed repo creation
         if response.status_code != 201:
             error_count += 1
-    logging.info(f"Repostiory creation returned {error_count} errors.")
+    logging.info(f"Repostiory creation returned {error_count} errors")
 
 
 def test_repo_deletion():
     # Delete repositories created in test_repo_creation
-    logging.info("Testing deletion of smoke test repositories")
+    logging.info("Testing deletion of smoketest repositories")
     logging.debug("Deleting the following repsitories: {repo_list()}")
     username = get_pat_user(pat)
     error_count = 0
@@ -82,11 +82,14 @@ def test_repo_deletion():
         # We expect a 204 response on positive deletion
         if response.status_code != 204:
             error_count += 1
-    logging.info(f"Repository deletion returned {error_count} errors.")
+    logging.info(f"Repository deletion returned {error_count} errors")
 
 
 def test_issues():
-    # Creates an issue in each created repository, then deletes it.
+    # Creates an issue in each smoketest repository, then deletes it.
+    logging.info("Testing creation of Issues in smoketest repositories")
+    logging.debug(
+        f"Creating an Issue in each of the following repostiories: {repo_list()}")
     username = get_pat_user(pat)
     error_count = 0
     payload = {
@@ -99,7 +102,29 @@ def test_issues():
         # We expect a 201 response on positive deletion
         if response.status_code != 201:
             error_count += 1
-    logging.info(f"Issue creation returned {error_count} errors.")
+    logging.info(f"Issue creation returned {error_count} errors")
+
+
+def test_file_creation():
+    # Creates a file in each smoketest repository
+    logging.info("Testing file creation in each smoketest repository")
+    logging.debug(
+        f"Creating a single file in each of the following repositories: {repo_list()}")
+    username = get_pat_user(pat)
+    error_count = 0
+    payload = {
+        "message": "message",
+        "content": "Zm9vCg=="  # 'foo'
+    }
+    for r in repo_list():
+        url = construct_api_url('repos/' + username +
+                                '/' + r + '/contents/testfile')
+        response = requests.put(url, headers=headers,
+                                data=json.dumps(payload), verify=False)
+        # We expect a 201 response on positive file creation
+        if response.status_code != 201:
+            error_count += 1
+    logging.info(f"File creation returned {error_count} errors")
 
 
 if __name__ == '__main__':
@@ -130,6 +155,7 @@ if __name__ == '__main__':
             f"Running as {get_pat_user(pat)} - PAT auth confirmed working")
         test_repo_creation()
         test_issues()
+        test_file_creation()
         test_repo_deletion()
     else:
         logging.info(
