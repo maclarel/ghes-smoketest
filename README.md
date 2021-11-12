@@ -41,3 +41,21 @@ $ python3 smoketest.py -p <pat_for_user1_goes_here> -t https://github.fakecompan
 2021-11-11 12:39:55,654 INFO: Testing deletion of smoketest repositories
 2021-11-11 12:39:56,463 INFO: Repository deletion returned 0 errors out of 2 attempts. 0.0% failure rate.
 ```
+
+## FAQ
+
+> We have rate limiting enabled. How many API calls does this make?
+
+This script will make 42 API calls by default. 41 of these are subject to the rate limit, an 1 is not (the call to `/status` to ensure that the server is operational). Effectively, the number of calls will be equal to `(<-num value> * 4)+2`.
+
+> It seems like some of this could be done more efficiently via GraphQL rather than the REST API. Why not use it?
+
+The goal of this is not efficiency, but _coverage_. A single GraphQL call to do a significant amount of work only gives us a binary failure state. If we can spread that, instead, across tens/hundreds of API calls we'll get a better idea of how reliably GitHub Enterprise Server is able to respond. This is especially important for deployments that have a load balancer appliance sitting in front of GitHub Enterprise Server as we're more likely to hit many/all of the underlying servers in this test.
+
+> Why Python and not Ruby?
+
+I felt like working on a project in Python. 🤷
+
+> Can you add testing for X endpoint?
+
+Sure - please feel free to fork and open a Pull Request! Fortunately, with `requests` in Python it's pretty trivial to add new functionality here, so I'd encourage it as a learning project for anyone interested.
