@@ -52,6 +52,14 @@ This script will make 42 API calls by default. 41 of these are subject to the ra
 
 The goal of this is not efficiency, but _coverage_. A single GraphQL call to do a significant amount of work only gives us a binary failure state. If we can spread that, instead, across tens/hundreds of API calls we'll get a better idea of how reliably GitHub Enterprise Server is able to respond. This is especially important for deployments that have a load balancer appliance sitting in front of GitHub Enterprise Server as we're more likely to hit many/all of the underlying servers in this test.
 
+> I'm getting spammed with `InsecureRequestWarning` messages when I run this. What's up?
+
+You're probably using a self-signed certificate. I've already added `verify=False` to all of the API calls that are being done in this script to try to work around this in most cases, however you'll still get these annoying errors.
+
+The *best* solution is to ensure you've got the CA for server added to your local system, however barring that you could run `export PYTHONWARNINGS="ignore:Unverified HTTPS request"` to disable this warning.
+
+Obviously I'd prefer that you use a valid cert, but I know that's not always realistic.
+
 > Why Python and not Ruby?
 
 I felt like working on a project in Python. 🤷
