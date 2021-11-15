@@ -82,7 +82,7 @@ def test_repo_deletion():
     for r in repo_list():
         url = construct_api_url(f'repos/{username}/{r}')
         response = requests.delete(url, headers=headers, verify=False)
-        # We expect a 204 response on positive deletion
+        # We expect a 204 response on positive repository deletion
         if response.status_code != 204:
             error_count += 1
     logging.info(
@@ -90,7 +90,7 @@ def test_repo_deletion():
 
 
 def test_issues():
-    # Creates an issue in each smoketest repository, then deletes it.
+    # Creates an issue in each smoketest repository, then deletes it
     logging.info("Testing creation of Issues in smoketest repositories")
     logging.debug(
         f"Creating an Issue in each of the following repostiories: {repo_list()}")
@@ -103,7 +103,7 @@ def test_issues():
         url = construct_api_url(f'repos/{username}/{r}/issues')
         response = requests.post(url, headers=headers,
                                  data=json.dumps(payload), verify=False)
-        # We expect a 201 response on positive deletion
+        # We expect a 201 response on positive issue creation
         if response.status_code != 201:
             error_count += 1
     logging.info(
