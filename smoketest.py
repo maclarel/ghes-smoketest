@@ -26,10 +26,10 @@ headers = {'Accept': 'application/vnd.github.v3+json',
 
 
 def validate_args():
-    # Ensure that URL is valid and PAT is well formed
-    # TO DO
+    if ((target[0:8] == "https://") and (target[-4] == ".") and (target[-3:].isalnum())):
+        if ((len(pat) == 40) and (pat[0:4] == 'ghp_') and (pat[5:40].isalnum())):
+            return True
     pass
-
 
 def construct_api_url(endpoint):
     if endpoint == "status":
@@ -127,3 +127,10 @@ def test_loop():
     assert api_call(f'repos/{username}/{r}/contents/testfile', 'put',
                     201, {'message': 'testfile', 'content': 'Zm9vCg=='}) is True
     assert api_call(f'repos/{username}/{r}', 'delete', 204) is True
+
+
+'''
+- Find a way to reintroduce the logging I had in the `master` branch, but including a high level rollup. 
+Mostly just battling var scoping right now, and have so many meetings today I can't sit down and focus.
+- Building out pytest coverage - most importantly including functionality to pass in args via pytest rather than needing to hard-code just to run tests.
+'''
