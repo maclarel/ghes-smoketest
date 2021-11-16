@@ -20,8 +20,9 @@ Optional arguments:
 
 pat = ""
 target = ""
-num_repos = 1 
-headers = {'Accept': 'application/vnd.github.v3+json', 'Authorization': 'token ' + pat}
+num_repos = 10
+headers = {'Accept': 'application/vnd.github.v3+json',
+           'Authorization': 'token ' + pat}
 
 
 def validate_args():
@@ -55,15 +56,20 @@ def repo_list():
     # Create names of repositories to use
     return [f"smoketest_repo{num}" for num in range(1, num_repos+1)]
 
-def api_call(endpoint, method, expected_status, payload=None):
+
+def api_call(endpoint, verb, expected_status, payload=None):
     # Test endpoint passed in to function
-    logging.info(f"Testing {endpoint} endpoint")
+    logging.debug(
+        f"Testing {verb} request for {endpoint}. Looking for {expected_status} response. Payload (if applicable: {payload}")
     url = construct_api_url(endpoint)
     if payload:
-        response = requests.post(url, headers = headers, data=json.dumps(payload), verify=False)
+        response = requests.request(
+            verb, url, headers=headers, data=json.dumps(payload), verify=False)
     else:
-        response = requests.post(url, headers = headers, verify=False)
+        response = requests.request(verb, url, headers=headers, verify=False)
     if response.status_code != expected_status:
+        logging.error(
+            f'{verb} request to {endpoint} failed! Expected a {expected_status} response, but got a {response.status_code} response.')
         return False
     return True
 
@@ -98,11 +104,14 @@ if __name__ == '__main__':
     if server_up():
         logging.info(
             f"Running as {get_pat_user(pat)} - PAT auth confirmed working")
+        username = get_pat_user(pat)
         for r in repo_list():
-            api_call('user/repos', 'get', 201, {'name': r})
-            # create issue
-            # create file
-            # delete repo
+            api_call('user/repos', 'post', 201, {'name': r}) # create a repo
+            api_call(f'repos/{username}/{r}/issues', 'post', 201,
+                     {'title': 'This is a test issue'})  # create an issue
+            api_call(f'repos/{username}/{r}/contents/testfile', 'put', 201, {
+                     'message': 'testfile', 'content': 'Zm9vCg=='})  # create a file with  content "foo"
+            api_call(f'repos/{username}/{r}', 'delete', 204) # delete the repository
     else:
         logging.info(
             "Server appears to be down or is not a GitHub Enterprise Server system. Please double check the URL.")
@@ -110,5 +119,11 @@ if __name__ == '__main__':
 
 # Tests
 
-def test_repo():
-    assert api_call('user/repos', 'get', 201, {'name':'foo'}) is True
+def test_loop():
+    assert api_call('user/repos', 'get', 201, {'name': 'foo'}) is True
+    #assert api_call('user/repos', 'post', 201, {'name':'foo'}) is False
+    assert api_call(f'repos/{username}/{r}/issues', 'post',
+                    201, {'title': 'This is a test issue'}) is True
+    assert api_call(f'repos/{username}/{r}/contents/testfile', 'put',
+                    201, {'message': 'testfile', 'content': 'Zm9vCg=='}) is True
+    assert api_call(f'repos/{username}/{r}', 'delete', 204) is True
