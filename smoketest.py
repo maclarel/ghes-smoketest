@@ -76,7 +76,8 @@ def api_call(endpoint, verb, expected_status, payload=None):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Performs API & Git smoketests against GitHub Enterprise Server')
+    description='Performs API & Git smoketests against GitHub Enterprise Server')
+
     parser.add_argument('-target', dest='target', type=str,
                         help='The URL of the GHES instance, e.g. https://github.foo.com', required=True)
     parser.add_argument('-pat', dest='pat', type=str,
@@ -116,21 +117,72 @@ if __name__ == '__main__':
         logging.info(
             "Server appears to be down or is not a GitHub Enterprise Server system. Please double check the URL.")
 
-
 # Tests
-
-def test_loop():
-    assert api_call('user/repos', 'get', 201, {'name': 'foo'}) is True
-    #assert api_call('user/repos', 'post', 201, {'name':'foo'}) is False
-    assert api_call(f'repos/{username}/{r}/issues', 'post',
-                    201, {'title': 'This is a test issue'}) is True
-    assert api_call(f'repos/{username}/{r}/contents/testfile', 'put',
-                    201, {'message': 'testfile', 'content': 'Zm9vCg=='}) is True
-    assert api_call(f'repos/{username}/{r}', 'delete', 204) is True
-
-
 '''
-- Find a way to reintroduce the logging I had in the `master` branch, but including a high level rollup. 
-Mostly just battling var scoping right now, and have so many meetings today I can't sit down and focus.
-- Building out pytest coverage - most importantly including functionality to pass in args via pytest rather than needing to hard-code just to run tests.
+this is the sane way to do this
+    def test_repo():
+        assert api_call('user/repos', 'get', 201, {'name': 'foo'}) is True
+    
+    def test_issue():
+        assert api_call(f'repos/{username}/{r}/issues', 'post', 201, {'title': 'This is a test issue'}) is True
+
+    def test_file():
+        assert api_call(f'repos/{username}/{r}/contents/testfile', 'put',
+                201, {'message': 'testfile', 'content': 'Zm9vCg=='}) is True
+
+    def test_cleanup():
+        assert api_call(f'repos/{username}/{r}', 'delete', 204) is True
 '''
+
+# let's try to dynamically generate this noise. 
+# end goal is that we can add to the test suite by adding more hash table entries rather than hard coding the test.
+class TestClass:
+    testMaps = {'Test': {
+                        'repo': {
+                            'endpoint': 'user/repos',
+                            'call': 'get',
+                            'response': 201,
+                            'options': {
+                                'name': 'foo'
+                            },
+                            'assertResult':  True
+                        },
+                        'issues': {
+                            'endpoint': f'repos/{username}/{r}/issues',
+                            'call': 'get',
+                            'response': 201,
+                            'options': {
+                                'title': 'This is a test issue'
+                            },
+                            'assertResult': True
+                        },
+                        'testfile': {
+                            'endpoint': f'repos/{username}/{r}/contents/testfile',
+                            'call': 'get',
+                            'response': 201,
+                            'options': {
+                                'message': 'testfile', 
+                                'content': 'Zm9vCg=='
+                            },
+                            'assertResult': True
+                        },
+                        'delRepo': {
+                            'endpoint': f'repos/{username}/{r}',
+                            'call': 'get',
+                            'response': 204,
+                            'options': {
+                                'delete'
+                            },
+                            'assertResult': True
+                        }
+                    }
+                }
+
+
+    def testGen(endpoint, call, response, options, assertResult):
+        def test(self):
+            assert api_call(endpoint, call, response, options) is assertResult
+        return test
+
+    for name, params in testMaps.iteritems():
+        test_func = testGen(params[0], params[1], params[2], params[3])
