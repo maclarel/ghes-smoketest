@@ -28,7 +28,9 @@ error_count = 0
 def validate_target(target):
     # Ensure that URL is valid and PAT is well formed
     if not search('^htt(p|ps):/{2}.', target):
-        raise ValueError('Target URL must have an http[s]:// prefix and not be blank following it.')
+        raise ValueError(
+            'Target URL must have an http[s]:// prefix and not be blank following it.')
+
 
 def construct_api_url(endpoint):
     if endpoint == "status":
@@ -43,7 +45,8 @@ def server_up():
     if response.status_code == 200:
         logging.info(f"Server at {url} appears to be up!")
     else:
-        raise Exception('Server appears to be down or is not a GitHub Enterprise Server system. Please double check the URL.')
+        raise Exception(
+            'Server appears to be down or is not a GitHub Enterprise Server system. Please double check the URL.')
 
 
 def get_pat_user(pat):
@@ -107,7 +110,7 @@ if __name__ == '__main__':
         validate_target(target)
     except ValueError as err:
         logging.error(f'Target URL validation failed with: {err}.')
-        raise SystemExit 
+        raise SystemExit
 
     try:
         server_up()
@@ -125,17 +128,20 @@ if __name__ == '__main__':
             api_call(f'repos/{username}/{r}/contents/testfile', 'put', 201, {
                      'message': 'testfile', 'content': 'Zm9vCg=='})  # create a file with  content "foo"
             # delete the repository
-            #api_call(f'repos/{username}/{r}', 'delete', 204)
+            api_call(f'repos/{username}/{r}', 'delete', 204)
             if error_count > start_err_count:
-                logging.error(f'Loop {r} completed with {error_count - start_err_count} errors.')
+                logging.error(
+                    f'Loop {r} completed with {error_count - start_err_count} errors.')
             else:
                 logging.info(f'Loop {r} completed successfully.')
         if error_count:
-            logging.error(f'Testing completed with {error_count} errors. Please review logs!')
+            logging.error(
+                f'Testing completed with {error_count} errors. Please review logs!')
         else:
             logging.info(f'Testing completed successfully.')
 
 # Tests
+
 
 def test_create():
     assert api_call('user/repos', 'get', 201, {'name': 'foo'}) is True
