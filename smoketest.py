@@ -184,5 +184,5 @@ class TestClass:
             assert api_call(endpoint, call, response, options) is assertResult
         return test
 
-    for name, params in testMaps.iteritems():
+    for params in testMaps.iteritems():
         test_func = testGen(params[0], params[1], params[2], params[3])
