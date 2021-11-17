@@ -28,25 +28,37 @@ Optional arguments:
 
 ## Example output
 
+Successful run:
+
 ```
-$ python3 smoketest.py -p <pat_for_user1_goes_here> -t https://github.fakecompany.net -n 2
-2021-11-11 12:39:50,966 INFO: Server at https://github.fakecompany.net/status appears to be up!
-2021-11-11 12:39:51,437 INFO: Running as user1 - PAT auth confirmed working
-2021-11-11 12:39:51,437 INFO: Testing creation of smoketest repositories
-2021-11-11 12:39:53,423 INFO: Repostiory creation returned 0 errors out of 2 attempts. 0.0% failure rate.
-2021-11-11 12:39:53,424 INFO: Testing creation of Issues in smoketest repositories
-2021-11-11 12:39:54,670 INFO: Issue creation returned 0 errors out of 2 attempts. 0.0% failure rate.
-2021-11-11 12:39:54,670 INFO: Testing file creation in each smoketest repository
-2021-11-11 12:39:55,654 INFO: File creation returned 0 errors out of 2 attempts. 0.0% failure rate.
-2021-11-11 12:39:55,654 INFO: Testing deletion of smoketest repositories
-2021-11-11 12:39:56,463 INFO: Repository deletion returned 0 errors out of 2 attempts. 0.0% failure rate.
+$ python3 smoketest.py -p <pat> -t https://fakeserver.net -n 2
+2021-11-16 18:58:48,253 INFO: Server at https://fakeserver.net/status appears to be up!
+2021-11-16 18:58:48,444 INFO: Running as user1 - PAT auth confirmed working
+2021-11-16 18:58:50,636 INFO: Loop smoketest_repo1 completed successfully.
+2021-11-16 18:58:52,470 INFO: Loop smoketest_repo2 completed successfully.
+2021-11-16 18:58:52,470 INFO: Testing completed successfully.
+```
+
+Failing run:
+
+```
+$ python3 smoketest.py -p <pat> -t https://fakeserver.net -n 2
+2021-11-16 18:56:25,202 INFO: Server at https://fakeserver.net/status appears to be up!
+2021-11-16 18:56:25,398 INFO: Running as user1 - PAT auth confirmed working
+2021-11-16 18:56:25,791 ERROR: post request to user/repos failed! Expected a 201 response, but got a 422 response.
+2021-11-16 18:56:26,494 ERROR: put request to repos/user1/smoketest_repo1/contents/testfile failed! Expected a 201 response, but got a 422 response.
+2021-11-16 18:56:26,495 ERROR: Loop smoketest_repo1 completed with 2 errors.
+2021-11-16 18:56:26,692 ERROR: post request to user/repos failed! Expected a 201 response, but got a 422 response.
+2021-11-16 18:56:27,540 ERROR: put request to repos/user1/smoketest_repo2/contents/testfile failed! Expected a 201 response, but got a 422 response.
+2021-11-16 18:56:27,540 ERROR: Loop smoketest_repo2 completed with 2 errors.
+2021-11-16 18:56:27,540 ERROR: Testing completed with 4 errors. Please review logs!
 ```
 
 ## FAQ
 
 > We have rate limiting enabled. How many API calls does this make?
 
-This script will make 42 API calls by default. 41 of these are subject to the rate limit, an 1 is not (the call to `/status` to ensure that the server is operational). Effectively, the number of calls will be equal to `(<-num value> * 4)+2`.
+This script will make 42 API calls by default. 41 of these are subject to the rate limit, an 1 is not (the call to `/status` to ensure that the server is operational). Effectively, the number of calls will be equal to `(<num value> * # of tests)+2`.
 
 > It seems like some of this could be done more efficiently via GraphQL rather than the REST API. Why not use it?
 
@@ -66,4 +78,4 @@ I felt like working on a project in Python. 🤷
 
 > Can you add testing for X endpoint?
 
-Sure - please feel free to fork and open a Pull Request! Fortunately, with `requests` in Python it's pretty trivial to add new functionality here, so I'd encourage it as a learning project for anyone interested.
+Sure - please feel free to fork and open a Pull Request! Fortunately, with `requests` in Python it's pretty trivial to add new functionality here, so I'd encourage it as a learning project for anyone interested. This should be as simple as adding a new `api_call()` invocation with the proper arguments.
