@@ -26,7 +26,7 @@ error_count = 0
 request_count = 0
 
 
-def validate_pat():
+def validate_pat(pat):
     if not ((len(pat) == 40) and (pat[0:4] == 'ghp_') and (pat[5:40].isalnum())):
         raise ValueError(
             'Pat is malformed.'
