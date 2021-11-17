@@ -23,10 +23,10 @@ pat = ""
 target = ""
 num_repos = 10
 error_count = 0
-
+request_count = 0
 
 def validate_target(target):
-    # Ensure that URL is valid and PAT is well formed
+    # Ensure that URL is valid and well formed
     if not search('^htt(p|ps):/{2}.', target):
         raise ValueError(
             'Target URL must have an http[s]:// prefix and not be blank following it.')
@@ -39,6 +39,7 @@ def construct_api_url(endpoint):
 
 
 def server_up():
+    # Check that the server is up
     url = construct_api_url('status')
     response = requests.get(url, verify=False)
     logging.debug(f"Tested {url}, received response of {response.status_code}")
@@ -50,8 +51,13 @@ def server_up():
 
 
 def get_pat_user(pat):
+    # Ensure that we can auth with provided PAT, and return username if so
     url = construct_api_url('user')
     response = requests.get(url, headers=headers, verify=False)
+    if 'Bad credentials' in response.text:
+        logging.error(f"PAT authentication failed with error: {json.loads(response.text)['message']}")
+        raise SystemExit
+    logging.info(f"Running as {json.loads(response.text)['login']} - PAT auth confirmed working")
     return json.loads(response.text)['login']
 
 
@@ -61,7 +67,7 @@ def repo_list():
 
 
 def api_call(endpoint, verb, expected_status, payload=None):
-    # Test endpoint passed in to function
+    # Test endpoint passed in to function and increment global counters
     logging.debug(
         f"Testing {verb} request for {endpoint}. Looking for {expected_status} response. Payload (if applicable): {payload}")
     url = construct_api_url(endpoint)
@@ -70,6 +76,8 @@ def api_call(endpoint, verb, expected_status, payload=None):
             verb, url, headers=headers, data=json.dumps(payload), verify=False)
     else:
         response = requests.request(verb, url, headers=headers, verify=False)
+    global request_count
+    request_count += 1
     if response.status_code != expected_status:
         logging.error(
             f'{verb} request to {endpoint} failed! Expected a {expected_status} response, but got a {response.status_code} response.')
@@ -117,8 +125,6 @@ if __name__ == '__main__':
     except Exception as err:
         logging.error(err)
     else:
-        logging.info(
-            f"Running as {get_pat_user(pat)} - PAT auth confirmed working")
         username = get_pat_user(pat)
         for r in repo_list():
             start_err_count = error_count
@@ -136,7 +142,7 @@ if __name__ == '__main__':
                 logging.info(f'Loop {r} completed successfully.')
         if error_count:
             logging.error(
-                f'Testing completed with {error_count} errors. Please review logs!')
+                f'Testing completed with {error_count} errors out of {request_count} API calls- {round(error_count/request_count * 100, 2)}% failure rate. Please review logs!')
         else:
             logging.info(f'Testing completed successfully.')
 
