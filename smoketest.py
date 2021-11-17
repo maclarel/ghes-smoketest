@@ -25,6 +25,7 @@ num_repos = 10
 error_count = 0
 request_count = 0
 
+
 def validate_target(target):
     # Ensure that URL is valid and well formed
     if not search('^htt(p|ps):/{2}.', target):
@@ -55,9 +56,11 @@ def get_pat_user(pat):
     url = construct_api_url('user')
     response = requests.get(url, headers=headers, verify=False)
     if 'Bad credentials' in response.text:
-        logging.error(f"PAT authentication failed with error: {json.loads(response.text)['message']}")
+        logging.error(
+            f"PAT authentication failed with error: {json.loads(response.text)['message']}")
         raise SystemExit
-    logging.info(f"Running as {json.loads(response.text)['login']} - PAT auth confirmed working")
+    logging.info(
+        f"Running as {json.loads(response.text)['login']} - PAT auth confirmed working")
     return json.loads(response.text)['login']
 
 
