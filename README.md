@@ -43,22 +43,30 @@ Failing run:
 
 ```
 $ python3 smoketest.py -p <pat> -t https://fakeserver.net -n 2
-2021-11-16 18:56:25,202 INFO: Server at https://fakeserver.net/status appears to be up!
-2021-11-16 18:56:25,398 INFO: Running as user1 - PAT auth confirmed working
-2021-11-16 18:56:25,791 ERROR: post request to user/repos failed! Expected a 201 response, but got a 422 response.
-2021-11-16 18:56:26,494 ERROR: put request to repos/user1/smoketest_repo1/contents/testfile failed! Expected a 201 response, but got a 422 response.
-2021-11-16 18:56:26,495 ERROR: Loop smoketest_repo1 completed with 2 errors.
-2021-11-16 18:56:26,692 ERROR: post request to user/repos failed! Expected a 201 response, but got a 422 response.
-2021-11-16 18:56:27,540 ERROR: put request to repos/user1/smoketest_repo2/contents/testfile failed! Expected a 201 response, but got a 422 response.
-2021-11-16 18:56:27,540 ERROR: Loop smoketest_repo2 completed with 2 errors.
-2021-11-16 18:56:27,540 ERROR: Testing completed with 4 errors. Please review logs!
+2021-11-17 08:25:25,168 INFO: Server at https://fakeserver.net/status appears to be up!
+2021-11-17 08:25:25,369 INFO: Running as user1 - PAT auth confirmed working
+2021-11-17 08:25:25,755 ERROR: post request to user/repos failed! Expected a 201 response, but got a 422 response.
+2021-11-17 08:25:26,423 ERROR: put request to repos/user1/smoketest_repo1/contents/testfile failed! Expected a 201 response, but got a 422 response.
+2021-11-17 08:25:26,683 ERROR: Loop smoketest_repo1 completed with 2 errors.
+2021-11-17 08:25:26,888 ERROR: post request to user/repos failed! Expected a 201 response, but got a 422 response.
+2021-11-17 08:25:27,567 ERROR: put request to repos/user1/smoketest_repo2/contents/testfile failed! Expected a 201 response, but got a 422 response.
+2021-11-17 08:25:27,842 ERROR: Loop smoketest_repo2 completed with 2 errors.
+2021-11-17 08:25:27,842 ERROR: Testing completed with 4 errors - 50.0% failure rate. Please review logs!
+```
+
+Bad PAT:
+
+```
+$ python3 smoketest.py -p <bad_pat> -t https://fakeserver.net -n 2
+2021-11-17 08:36:05,389 INFO: Server at https://fakeserver.net/status appears to be up!
+2021-11-17 08:36:06,206 ERROR: PAT authentication failed with error: Bad credentials. Please check credentials.
 ```
 
 ## FAQ
 
 > We have rate limiting enabled. How many API calls does this make?
 
-This script will make 42 API calls by default. 41 of these are subject to the rate limit, an 1 is not (the call to `/status` to ensure that the server is operational). Effectively, the number of calls will be equal to `(<num value> * # of tests)+2`.
+This script will make 42 API calls by default. 41 of these are subject to the rate limit, and 1 is not (the call to `/status` to ensure that the server is operational). Effectively, the number of calls will be equal to `(<num value> * # of tests)+2`.
 
 > It seems like some of this could be done more efficiently via GraphQL rather than the REST API. Why not use it?
 
