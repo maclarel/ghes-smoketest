@@ -28,7 +28,7 @@ request_count = 0
 
 def validate_target(target):
     # Ensure that URL is valid and well formed
-    if not search('^htt(p|ps):/{2}.', target):
+    if not search('^https?:/{2}', target):
         raise ValueError(
             'Target URL must have an http[s]:// prefix and not be blank following it.')
 
